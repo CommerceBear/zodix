@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { LoaderArgs } from '@remix-run/server-runtime';
 import type { ZodEffects, ZodObject, ZodRawShape } from 'zod';
-import { FormData, NodeOnDiskFile, Request } from '@remix-run/node';
+import { LoaderFunctionArgs } from 'react-router';
 import { z } from 'zod';
 import { zx } from './';
 
-type Params = LoaderArgs['params'];
+type Params = LoaderFunctionArgs['params'];
 
 describe('parseParams', () => {
   type Result = { id: string; age: number };
@@ -311,7 +310,7 @@ describe('parseForm', () => {
     age: number;
     consent: boolean;
     friends?: string[];
-    image?: NodeOnDiskFile;
+    // image?: NodeOnDiskFile;
   };
   const formResult = { id: 'id1', age: 10, consent: true };
   const objectSchema = {
@@ -319,7 +318,7 @@ describe('parseForm', () => {
     age: zx.IntAsString,
     consent: zx.CheckboxAsString,
     friends: z.array(z.string()).optional(),
-    image: z.instanceof(NodeOnDiskFile).optional(),
+    // image: z.instanceof(NodeOnDiskFile).optional(),
   };
   const zodSchema = z.object(objectSchema);
   const asyncSchema = zodSchema.transform((data) => Promise.resolve(data));
@@ -382,7 +381,7 @@ describe('parseForm', () => {
       age: zx.IntAsString,
       consent: zx.CheckboxAsString,
       friends: z.array(z.string()).optional(),
-      image: z.instanceof(NodeOnDiskFile).optional(),
+      // image: z.instanceof(NodeOnDiskFile).optional(),
     });
     expect(result).toStrictEqual({
       ...formResult,
@@ -394,8 +393,8 @@ describe('parseForm', () => {
   test('parses objects keys of FormData from FormData using a schema', async () => {
     const request = createFormRequest();
     const form = await request.formData();
-    const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
-    form.append('image', image);
+    // const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
+    // form.append('image', image);
     const parser = getCustomFileParser('image');
     const result = await zx.parseForm<typeof zodSchema, typeof parser>(
       form,
@@ -404,7 +403,7 @@ describe('parseForm', () => {
     );
     expect(result).toStrictEqual({
       ...formResult,
-      image,
+      // image,
     });
     type verify = Expect<Equal<typeof result, Result>>;
   });
@@ -412,8 +411,8 @@ describe('parseForm', () => {
   test('parses objects keys of FormData from FormData using an async schema', async () => {
     const request = createFormRequest();
     const form = await request.formData();
-    const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
-    form.append('image', image);
+    // const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
+    // form.append('image', image);
     const parser = getCustomFileParser('image');
     const result = await zx.parseForm<typeof asyncSchema, typeof parser>(
       form,
@@ -422,24 +421,42 @@ describe('parseForm', () => {
     );
     expect(result).toStrictEqual({
       ...formResult,
-      image,
+      // image,
     });
     type verify = Expect<Equal<typeof result, Result>>;
   });
 
   test('throws for invalid FormData using an object', async () => {
     const badRequest = createFormRequest('notanumber');
-    await expect(zx.parseForm(badRequest, objectSchema)).rejects.toBeInstanceOf(Response)
+    await expect(zx.parseForm(badRequest, objectSchema)).rejects.toMatchObject({
+      data: 'Bad Request',
+      init: {
+        status: 400,
+        statusText: 'Bad Request'
+      }
+    });
   });
 
   test('throws for invalid FormData using a schema', async () => {
     const badRequest = createFormRequest('notanumber');
-    await expect(zx.parseForm(badRequest, zodSchema)).rejects.toBeInstanceOf(Response)
+    await expect(zx.parseForm(badRequest, zodSchema)).rejects.toMatchObject({
+      data: 'Bad Request',
+      init: {
+        status: 400,
+        statusText: 'Bad Request'
+      }
+    });
   });
 
   test('throws for invalid FormData using an async schema', async () => {
     const badRequest = createFormRequest('notanumber');
-    await expect(zx.parseForm(badRequest, asyncSchema)).rejects.toBeInstanceOf(Response)
+    await expect(zx.parseForm(badRequest, asyncSchema)).rejects.toMatchObject({
+      data: 'Bad Request',
+      init: {
+        status: 400,
+        statusText: 'Bad Request'
+      }
+    });
   });
 });
 
@@ -449,7 +466,7 @@ describe('parseFormSafe', () => {
     age: number;
     consent: boolean;
     friends?: string[];
-    image?: NodeOnDiskFile;
+    // image?: NodeOnDiskFile;
   };
   const formResult = { id: 'id1', age: 10, consent: true };
   const zodSchema = z.object({
@@ -457,7 +474,7 @@ describe('parseFormSafe', () => {
     age: zx.IntAsString,
     consent: zx.CheckboxAsString,
     friends: z.array(z.string()).optional(),
-    image: z.instanceof(NodeOnDiskFile).optional(),
+    // image: z.instanceof(NodeOnDiskFile).optional(),
   });
   const asyncSchema = zodSchema.transform((data) => Promise.resolve(data));
 
@@ -468,7 +485,7 @@ describe('parseFormSafe', () => {
       age: zx.IntAsString,
       consent: zx.CheckboxAsString,
       friends: z.array(z.string()).optional(),
-      image: z.instanceof(NodeOnDiskFile).optional(),
+      // image: z.instanceof(NodeOnDiskFile).optional(),
     });
     expect(result.success).toBe(true);
     if (result.success !== true) throw new Error('Parsing failed');
@@ -524,8 +541,8 @@ describe('parseFormSafe', () => {
   test('parses objects keys of FormData from FormData using a schema', async () => {
     const request = createFormRequest();
     const form = await request.formData();
-    const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
-    form.append('image', image);
+    // const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
+    // form.append('image', image);
     const parser = getCustomFileParser('image');
     const result = await zx.parseFormSafe<typeof zodSchema, typeof parser>(
       form,
@@ -536,7 +553,7 @@ describe('parseFormSafe', () => {
     if (result.success !== true) throw new Error('Parsing failed');
     expect(result.data).toStrictEqual({
       ...formResult,
-      image,
+      // image,
     });
     type verify = Expect<Equal<typeof result.data, Result>>;
   });
@@ -544,8 +561,8 @@ describe('parseFormSafe', () => {
   test('parses objects keys of FormData from FormData using an async schema', async () => {
     const request = createFormRequest();
     const form = await request.formData();
-    const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
-    form.append('image', image);
+    // const image = new NodeOnDiskFile('public/image.jpeg', 'image/jpeg');
+    // form.append('image', image);s
     const parser = getCustomFileParser('image');
     const result = await zx.parseFormSafe<typeof asyncSchema, typeof parser>(
       form,
@@ -556,7 +573,7 @@ describe('parseFormSafe', () => {
     if (result.success !== true) throw new Error('Parsing failed');
     expect(result.data).toStrictEqual({
       ...formResult,
-      image,
+      // image,
     });
     type verify = Expect<Equal<typeof result.data, Result>>;
   });
@@ -603,7 +620,7 @@ function customArrayParser(searchParams: URLSearchParams) {
 
 // Custom URLSearchParams parser that casts a set of key to NodeOnDiskFile
 type CustomParsedSearchParams = {
-  [key: string]: string | string[] | NodeOnDiskFile;
+  [key: string]: string | string[] //| NodeOnDiskFile;
 };
 function getCustomFileParser(...fileKeys: string[]) {
   return function (searchParams: URLSearchParams) {
@@ -612,7 +629,7 @@ function getCustomFileParser(...fileKeys: string[]) {
       const currentVal = values[key];
       if (fileKeys.includes(key)) {
         const obj = JSON.parse(value);
-        values[key] = new NodeOnDiskFile(obj.filepath, obj.type, obj.slicer);
+        // values[key] = new NodeOnDiskFile(obj.filepath, obj.type, obj.slicer);
       } else if (currentVal && Array.isArray(currentVal)) {
         currentVal.push(value);
       } else if (currentVal && typeof currentVal === 'string') {

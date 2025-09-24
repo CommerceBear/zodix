@@ -24,9 +24,7 @@
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@remix-run/eslint-config": "^1.7.2",
-    "@remix-run/node": "^1.7.2",
-    "@remix-run/server-runtime": "^1.7.2",
+    "react-router": "^7.9.0",
     "esbuild": "^0.15.10",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
@@ -40,7 +38,7 @@
     "zod": "^3.19.1"
   },
   "peerDependencies": {
-    "@remix-run/server-runtime": "1.x || 2.x",
+    "react-router": "7.x",
     "zod": "3.x"
   },
   "publishConfig": {

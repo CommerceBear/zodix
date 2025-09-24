@@ -1,14 +1,13 @@
-import { Form, useLoaderData } from "@remix-run/react";
-import { json, LoaderArgs } from "@remix-run/server-runtime";
+import { Form, useLoaderData, data, LoaderFunctionArgs } from "react-router";
 import { z } from "zod";
 import { zx } from "../../../src";
 
-export async function loader(args: LoaderArgs) {
+export async function loader(args: LoaderFunctionArgs) {
   const { query } = zx.parseQuery(args.request, {
     query: z.string().optional(),
   });
   const results = query ? searchAnimals(query) : [];
-  return json({ query, results });
+  return data({ query, results });
 }
 
 export default function Search() {

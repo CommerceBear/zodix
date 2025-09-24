@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { createErrorResponse } from './errors';
-import type { DataFunctionArgs } from '@remix-run/server-runtime';
+import type { LoaderFunctionArgs, ActionFunctionArgs } from 'react-router';
 import type {
   output,
   SafeParseReturnType,
@@ -9,7 +9,7 @@ import type {
   ZodTypeAny,
 } from 'zod';
 
-type Params = DataFunctionArgs['params'];
+type Params = (LoaderFunctionArgs & ActionFunctionArgs)['params'];
 
 type Options<Parser = SearchParamsParser> = {
   /** Custom error message for when the validation fails. */
@@ -250,7 +250,7 @@ function isFormData(value: unknown): value is FormData {
  * Check if value is an instance of URLSearchParams.
  * This is a workaround for `instanceof` to support multiple platforms.
  */
-function isURLSearchParams(value: unknown): value is FormData {
+function isURLSearchParams(value: unknown): value is URLSearchParams {
   return getObjectTypeName(value) === 'URLSearchParams';
 }
 

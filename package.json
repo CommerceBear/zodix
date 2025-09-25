@@ -17,7 +17,7 @@
   "scripts": {
     "build": "node build.js && tsc -b",
     "lint": "eslint src",
-    "prepare": "yarn build",
+    "prepare": "node build.js && tsc -b",
     "prepublishOnly": "yarn lint && yarn typecheck",
     "test": "vitest",
     "release": "np",
